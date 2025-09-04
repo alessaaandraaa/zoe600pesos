@@ -49,13 +49,13 @@
                 <form id="loginForm" method="post" action="https://todo-list.dcism.org/signin_action.php" novalidate>
                     <div class="form-control">
                         <label for="email">Email:</label>
-                        <input type="email" name="email" id="email" placeholder="Email">
+                        <input type="login-email" name="login-email" id="login-email" placeholder="Email">
                     </div>
                     <div class="form-control">
                         <label for="password">Password:</label>
-                        <input type="password" name="password" id="password" placeholder="Password">
+                        <input type="login-password" name="login-password" id="login-password" placeholder="Password">
                     </div>
-                    <input type="submit" value="Log In" name="login">
+                    <input type="submit" value="Log In" name="login" id = "submitLogin">
                 </form>
                 <div>
                     <p>Don't have an account?</p>
@@ -74,6 +74,30 @@
             $("#registerBtn").click(function(){
                 $("#register").show();
                 $("#login").hide();
+            });
+
+            $("#submitLogin").click(function(event) {
+                event.preventDefault();
+
+                const email = $('#login-email').val();
+                const password = $('#login-password').val();
+                var xhttp = new XMLHttpRequest();
+
+                const url = `https://todo-list.dcism.org/signin_action.php?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+                xhttp.open("GET", url, true);
+                console.log(url);
+
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        const response = JSON.parse(this.responseText);
+                        const userId = response.data.id;
+                        console.log(userId);
+                        location.href = `todo.html?user_id=${userId}`;
+                    }
+                }
+
+                xhttp.send();
+
             });
         })
 

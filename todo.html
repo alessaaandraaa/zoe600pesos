@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO</title>
+</head>
+<body>
+    <p>Iloy si cliff</p>
+    <div class = "todo">
+
+    </div>
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const userId = urlParams.get('user_id');
+
+        console.log(userId)
+
+        var xhttp = new XMLHttpRequest();
+        //const url = `https://todo-list.dcism.org/getItems_action.php?status=active&user_id=${encodeURIComponent(userId)}`;
+        const url = `https://todo-list.dcism.org/getItems_action.php?status=active&user_id=3`;
+        xhttp.open("GET", url, true);
+        xhttp.send();
+
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+                console.log(response);
+                const items = Object.values(response.data);
+
+                let todoDiv = document.querySelector('.todo');
+                let ul = document.createElement('ul');
+
+                items.forEach(item => {
+                    let li = document.createElement('li');
+                    li.textContent = item.item;
+                    ul.appendChild(li);
+                });
+
+                todoDiv.appendChild(ul);
+            }
+        }
+    </script>
+</body>
+</html>
