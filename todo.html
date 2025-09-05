@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     <title>TODO</title>
 </head>
 <body>
@@ -11,6 +12,7 @@
         NOTE: No add task functionality, so using user_id=1 for testing purposes
     -->
     <p>Iloy si cliff</p>
+    <h1>Commented the delete button bc it actually deletes the tasks lmao</h1>
     <span>
         <button id = "activeTasks">Active Tasks</button>
         <button id = "inactiveTasks">Inactive Tasks</button>
@@ -21,7 +23,6 @@
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const userId = urlParams.get('user_id');
-        console.log(userId)
 
         $("#activeTasks").click(function(){
             $(".active-todo").show();
@@ -29,12 +30,21 @@
 
             renderTasks("active");
         });
+        
         $("#inactiveTasks").click(function(){
             $(".inactive-todo").show();
             $(".active-todo").hide();
 
             renderTasks("inactive");
         });
+        /*
+        $(document).on("click", ".delete-task", function () {
+            let taskDiv = $(this).parent();  
+            let taskId = taskDiv.attr('class');            
+            console.log("Deleting task:", taskId);
+
+            deleteTask(taskId);
+        }); */
 
         function renderTasks(status) {
             var xhttp = new XMLHttpRequest();
@@ -59,9 +69,11 @@
 
                     items.forEach(item => {
                         let task = document.createElement('div');
+                        task.className = `${item.item_id}`
                         task.innerHTML = `
                             <h2>${item.item_name}</h2>
                             <p>${item.item_description}</p>
+                            <button class = "delete-task">Delete Task</button>
                         `;
                         ul.appendChild(task);
                     });
@@ -70,6 +82,24 @@
                 }
             }
         }
+
+        function deleteTask(id) {
+            var xhttp = new XMLHttpRequest();
+            const url = `https://todo-list.dcism.org/deleteItem_action.php?item_id=${encodeURIComponent(id)}`;
+            xhttp.open("GET", url, true);
+            xhttp.send();
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const response = JSON.parse(this.responseText);
+                    console.log(response);
+
+                    renderTasks("active");
+                    renderTasks("inactive");
+                }
+            }
+        }
     </script>
+
 </body>
 </html>
