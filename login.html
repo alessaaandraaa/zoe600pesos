@@ -170,7 +170,6 @@
 
     <script>
         $(document).ready(function () {
-            // Toggle forms + images
             $("#loginBtn").click(function(){
                 $("#login").show();
                 $("#register").hide();
@@ -183,7 +182,6 @@
                 $(".login-image").removeClass("login").addClass("register");
             });
 
-            // LOGIN AJAX
             $("#loginForm").on("submit", function(event) {
                 event.preventDefault();
 

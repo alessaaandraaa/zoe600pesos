@@ -13,9 +13,9 @@
     -->
     <p>Iloy si cliff</p>
     <h2>Add Task</h2>
-    <form id="addTaskForm">
-        <input type="text" id="item_name" placeholder="Task name" required>
-        <input type="text" id="item_description" placeholder="Task description" required>
+    <form id="addTaskForm" method = "post">
+        <input type="text" id="item_name" name = "item_name" placeholder="Task Name" required>
+        <input type="text" id="item_description" name = "item_description" placeholder="Task Description" required>
         <button type="submit">Add Task</button>
     </form>
 
@@ -27,6 +27,7 @@
     <div class = "active-todo"></div>
     <div class = "inactive-todo"></div>
     <script>
+    
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const userId = urlParams.get('user_id');
@@ -44,14 +45,51 @@
 
             renderTasks("inactive");
         });
-        /*
+
+        $("#addTaskForm").on("submit", function(event) {
+                event.preventDefault();
+
+                let formData = {};
+                new FormData(this).forEach((value, key) => {
+                    formData[key] = value;
+                });
+
+                formData.user_id = userId;
+
+                let jsonData = JSON.stringify(formData);
+                console.log("New Task:", jsonData);
+
+                var xhttp = new XMLHttpRequest();
+                const url = `https://todo-list.dcism.org/addItem_action.php`;
+                xhttp.open("POST", `${url}`, true);
+                console.log("Submitting data...");
+
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState === 4) {
+                        console.log("Raw signup response:", this.responseText);
+                        if (this.status === 200) {
+                            try {
+                                const response = JSON.parse(this.responseText);
+                                console.log("Parsed signup response:", response);
+                                alert("Added task");
+                            } catch (e) {
+                                console.error("Add Task: Could not parse JSON", e);
+                            }
+                        } else {
+                            console.error("Failed to add task", this.status, this.responseText);
+                        }
+                    }
+                };
+                xhttp.send(jsonData);
+        });
+        
         $(document).on("click", ".delete-task", function () {
             let taskDiv = $(this).parent();  
             let taskId = taskDiv.attr('class');            
             console.log("Deleting task:", taskId);
 
             deleteTask(taskId);
-        }); */
+        }); 
 
         function renderTasks(status) {
             var xhttp = new XMLHttpRequest();
@@ -91,8 +129,8 @@
 
         function deleteTask(id) {
             var xhttp = new XMLHttpRequest();
-            // const url = `https://todo-list.dcism.org/deleteItem_action.php?item_id=${encodeURIComponent(id)}`;
-            const url = `https://todo-list.dcism.org/getItems_action.php?status=${encodeURIComponent(status)}&user_id=${encodeURIComponent(userId)}&t=${Date.now()}`; // add timestamp to prevent caching
+            const url = `https://todo-list.dcism.org/deleteItem_action.php?item_id=${encodeURIComponent(id)}`;
+            //const url = `https://todo-list.dcism.org/getItems_action.php?status=${encodeURIComponent(status)}&user_id=${encodeURIComponent(userId)}&t=${Date.now()}`; // add timestamp to prevent caching
             xhttp.open("GET", url, true);
             xhttp.send();
 
@@ -106,71 +144,6 @@
                 }
             }
         }
-
-        document.getElementById("addTaskForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-
-            const item_name = document.getElementById("item_name").value.trim();
-            const item_description = document.getElementById("item_description").value.trim();
-            const status = "active";
-
-            if (!item_name || !item_description || !userId) {
-                alert("⚠️ Please fill all fields and ensure user_id is set.");
-                return;
-            }
-
-            // Build URL-encoded form data
-            const params = `item_name=${encodeURIComponent(item_name)}&item_description=${encodeURIComponent(item_description)}&user_id=${encodeURIComponent(userId)}&status=${encodeURIComponent(status)}`;
-
-            const xhttp = new XMLHttpRequest();
-            xhttp.open("POST", "https://todo-list.dcism.org/addItem_action.php", true);
-            xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-            xhttp.onreadystatechange = function() {
-                if (this.readyState === 4) {
-                    let response;
-                    try {
-                        // Strip PHP warnings if they exist
-                        const jsonStart = this.responseText.indexOf("{");
-                        response = JSON.parse(this.responseText.substring(jsonStart));
-                    } catch (err) {
-                        console.error("Invalid JSON from server:", this.responseText);
-                        alert("❌ Could not parse server response.");
-                        return;
-                    }
-
-                    if (response.status === 200) {
-                        alert("✅ Task added successfully!");
-                        document.getElementById("addTaskForm").reset();
-
-                        // Render the new task immediately
-                        const newTask = response.data;
-                        const todoDiv = document.querySelector(".active-todo");
-                        let ul = todoDiv.querySelector("ul");
-                        if (!ul) {
-                            ul = document.createElement("ul");
-                            todoDiv.appendChild(ul);
-                        }
-
-                        const taskDiv = document.createElement("div");
-                        taskDiv.className = `${newTask.item_id}`;
-                        taskDiv.innerHTML = `
-                            <h2>${newTask.item_name}</h2>
-                            <p>${newTask.item_description}</p>
-                            <button class="delete-task">Delete Task</button>
-                        `;
-                        ul.appendChild(taskDiv);
-
-                    } else {
-                        alert("⚠️ Failed to add task: " + response.message);
-                    }
-                }
-            };
-
-            xhttp.send(params);
-        });
-
-
 
     </script>
 
