@@ -48,9 +48,7 @@
 
         function renderTasks(status) {
             var xhttp = new XMLHttpRequest();
-            //uncomment below if add task functionality is added
-            //const url = `https://todo-list.dcism.org/getItems_action.php?status=active&user_id=${encodeURIComponent(userId)}`;
-            const url = `https://todo-list.dcism.org/getItems_action.php?status=${status}&user_id=1`;
+            const url = `https://todo-list.dcism.org/getItems_action.php?status=active&user_id=${encodeURIComponent(userId)}`;
             xhttp.open("GET", url, true);
             xhttp.send();
 
