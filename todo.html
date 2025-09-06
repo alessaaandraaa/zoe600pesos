@@ -19,7 +19,6 @@
         <button type="submit">Add Task</button>
     </form>
 
-    <h1>Commented the delete button bc it actually deletes the tasks lmao</h1>
     <span>
         <button id = "activeTasks">Active Tasks</button>
         <button id = "inactiveTasks">Inactive Tasks</button>
@@ -72,6 +71,8 @@
                                 const response = JSON.parse(this.responseText);
                                 console.log("Parsed signup response:", response);
                                 alert("Added task");
+
+                                renderTasks("active");
                             } catch (e) {
                                 console.error("Add Task: Could not parse JSON", e);
                             }
