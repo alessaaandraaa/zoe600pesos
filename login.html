@@ -4,79 +4,182 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <title>TO-DO TASKS LOGIN PAGE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=TASA+Explorer:wght@400..800&display=swap" rel="stylesheet">
+    
+    <title>TO-DO LOGIN PAGE</title>
+
+    <style>
+        body {
+            font-family: "TASA Explorer", sans-serif;
+            position: relative;
+            background: url("wbg1.jpeg") no-repeat center center / cover;
+            min-height: 100vh;
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat; 
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.5); 
+            z-index: -1; 
+        }
+
+        .btn-custom {
+            background-color: #749BC2 !important;
+            border-color: #749BC2 !important;
+            color: white !important;
+        }
+
+        .btn-custom:hover {
+            background-color: #5d84a8 !important;
+            border-color: #5d84a8 !important;
+        }
+
+        .card {
+            border: 2px solid #749BC2 !important; 
+            border-radius: 0.5rem;
+            height: 100%;            
+        }
+
+        .card .row {
+            height: 100%;        
+        }
+
+        .login-image {
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain; 
+            min-height: 80%;          
+            height: 100%;
+        }
+
+        .login-image.login {
+            background-image: url("log-in.png");
+        }
+
+        .login-image.register {
+            background-image: url("log-in2.png");
+        }
+
+        #login, #register {
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-body-wrapper {
+            min-height: 460px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
 </head>
-<body>
+
+<body class="bg-light d-flex justify-content-center align-items-center vh-100">
     <div class="container">
-        <div class="login-section">
-            <div id="register" style="display: none;">
-                <h1>TO-DO</h1>
-                <hr>
-                <h1>SIGN UP</h1>
-                <form id="registerForm" method="post" action="https://todo-list.dcism.org/signup_action.php" novalidate>
-                    <div class="form-control">
-                        <label for="first_name">First Name:</label>
-                        <input type="text" name="first_name" id="first_name" placeholder="First Name">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-9">
+            
+            <!-- Rectangle (Bootstrap card) -->
+            <div class="card shadow-lg overflow-hidden p-2">
+                <div class="row g-0 align-items-stretch">
+
+                <!-- LEFT: Forms -->
+                <div class="col-md-7 p-4 d-flex flex-column">
+                
+                <div class="card-body-wrapper">
+                <!-- SIGN UP -->
+                <div id="register" style="display: none;">
+                    <h2 class="text-center mb-3 fs-1">SIGN UP</h2>
+                    <hr>
+
+                    <form id="registerForm" method="post" novalidate>
+                      <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name">
+                      </div>
+                      <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name">
+                      </div>
+                      <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" id="email" placeholder="Email">
+                      </div>
+                      <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" name="password" id="rpassword" placeholder="Password">
+                      </div>
+                        <button type="submit" class="btn btn-custom w-100" id="submitSignup">Sign Up</button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p>Already have an account?</p>
+                        <button id="loginBtn" class="btn btn-link">Login to your account</button>
                     </div>
-                    <div class="form-control">
-                        <label for="last_name">Last Name:</label>
-                        <input type="text" name="last_name" id="last_name" placeholder="Last Name">
-                    </div>
-                    <div class="form-control">
-                        <label for="email">Email:</label>
-                        <input type="email" name="email" id="email" placeholder="Email">
-                    </div>
-                    <div class="form-control">
-                        <label for="password">Password:</label>
-                        <input type="password" name="password" id="rpassword" placeholder="Password">
-                    </div>
-                    <div class="form-control">
-                        <label for="confirm_password">Confirm Password:</label>
-                        <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password">
-                    </div>
-                    <input type="submit" value="Sign Up" name="signup" id = "submitSignup" style = "margin-top: 5px">
-                </form>
-                <div>
-                    <p>Already have an account?</p>
-                    <button id="loginBtn">Login to your account</button>
                 </div>
+
+                <!-- LOGIN -->
+                <div id="login">
+                    <h2 class="text-center mb-3 fs-1">Welcome to CheckList!</h2>
+                    <hr>
+
+                    <form id="loginForm" method="post" novalidate>
+                        <div class="mb-3">
+                            <label for="login-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="login-email" id="login-email" placeholder="Email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="login-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" name="login-password" id="login-password" placeholder="Password">
+                        </div>
+                        <button type="submit" class="btn btn-custom w-100" id="submitLogin">Log In</button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p>Don't have an account?</p>
+                        <button id="registerBtn" class="btn btn-link">Register an account</button>
+                    </div>
+                </div>
+                </div>
+
             </div>
 
-            <div id="login">
-                <h1>TO-DO</h1>
-                <hr>
-                <h1>LOGIN TO YOUR ACCOUNT</h1>
-                <form id="loginForm" method="post" action="https://todo-list.dcism.org/signin_action.php" novalidate>
-                    <div class="form-control">
-                        <label for="email">Email:</label>
-                        <input type="login-email" name="login-email" id="login-email" placeholder="Email">
-                    </div>
-                    <div class="form-control">
-                        <label for="password">Password:</label>
-                        <input type="login-password" name="login-password" id="login-password" placeholder="Password">
-                    </div>
-                    <input type="submit" value="Log In" name="login" id = "submitLogin">
-                </form>
-                <div>
-                    <p>Don't have an account?</p>
-                    <button id="registerBtn">Register an account</button>
-                </div>
+            <!-- RIGHT: IMAGE -->
+            <div class="col-md-5 d-none d-md-block login-image login"></div>
+
+            </div>
             </div>
         </div>
     </div>
+
     <script>
         $(document).ready(function () {
+            // Toggle forms + images
             $("#loginBtn").click(function(){
                 $("#login").show();
                 $("#register").hide();
+                $(".login-image").removeClass("register").addClass("login");
             });
 
             $("#registerBtn").click(function(){
                 $("#register").show();
                 $("#login").hide();
+                $(".login-image").removeClass("login").addClass("register");
             });
 
-
+            // LOGIN AJAX
             $("#loginForm").on("submit", function(event) {
                 event.preventDefault();
 
@@ -86,21 +189,27 @@
 
                 const url = `https://todo-list.dcism.org/signin_action.php?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
                 xhttp.open("GET", url, true);
-                console.log(url);
 
                 xhttp.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
-                        const response = JSON.parse(this.responseText);
-                        const userId = response.data.id;
-                        console.log(userId);
-                        location.href = `todo.html?user_id=${userId}`;
+                    if (this.readyState === 4) {
+                        if (this.status === 200) {
+                            try {
+                                const response = JSON.parse(this.responseText);
+                                const userId = response.data.id;
+                                console.log("Login success, userId:", userId);
+                                location.href = `todo.html?user_id=${userId}`;
+                            } catch (e) {
+                                console.error("Login: JSON parse error", e);
+                            }
+                        } else {
+                            console.error("Login failed:", this.status, this.responseText);
+                        }
                     }
-                }
-
+                };
                 xhttp.send();
             });
 
-
+            // SIGNUP AJAX
             $("#registerForm").on("submit", function(event) {
                 event.preventDefault();
 
@@ -110,33 +219,34 @@
                 });
 
                 let jsonData = JSON.stringify(formData);
-                console.log(jsonData);
+                console.log("Signup JSON:", jsonData);
 
                 var xhttp = new XMLHttpRequest();
                 xhttp.open("POST", "https://todo-list.dcism.org/signup_action.php", true);
 
                 xhttp.onreadystatechange = function() {
                     if (this.readyState === 4) {
-                    console.log("Raw response:", this.responseText);
+                        console.log("Raw signup response:", this.responseText);
 
-                    if (this.status === 200) {
-                        try {
-                            const response = JSON.parse(this.responseText);
-                            console.log("Parsed JSON:", response);
-                            alert("Registration successful!");
-                            $("#login").show();
-                            $("#register").hide();
-                        } catch (e) {
-                            console.error("Could not parse JSON:", e);
+                        if (this.status === 200) {
+                            try {
+                                const response = JSON.parse(this.responseText);
+                                console.log("Parsed signup response:", response);
+                                alert("Registration successful!");
+                                $("#login").show();
+                                $("#register").hide();
+                                $(".login-image").removeClass("register").addClass("login");
+                            } catch (e) {
+                                console.error("Signup: Could not parse JSON", e);
+                            }
+                        } else {
+                            console.error("Signup failed:", this.status, this.responseText);
                         }
-                    } else {
-                        console.error("Error:", this.status, this.responseText);
                     }
-                }
                 };
                 xhttp.send(jsonData);
             });
-        })
+        });
     </script>
 </body>
 </html>
