@@ -12,6 +12,13 @@
         NOTE: No add task functionality, so using user_id=1 for testing purposes
     -->
     <p>Iloy si cliff</p>
+    <h2>Add Task</h2>
+    <form id="addTaskForm">
+        <input type="text" id="item_name" placeholder="Task name" required>
+        <input type="text" id="item_description" placeholder="Task description" required>
+        <button type="submit">Add Task</button>
+    </form>
+
     <h1>Commented the delete button bc it actually deletes the tasks lmao</h1>
     <span>
         <button id = "activeTasks">Active Tasks</button>
@@ -48,7 +55,7 @@
 
         function renderTasks(status) {
             var xhttp = new XMLHttpRequest();
-            const url = `https://todo-list.dcism.org/getItems_action.php?status=active&user_id=${encodeURIComponent(userId)}`;
+            const url = `https://todo-list.dcism.org/getItems_action.php?status=${encodeURIComponent(status)}&user_id=${encodeURIComponent(userId)}`; // Change
             xhttp.open("GET", url, true);
             xhttp.send();
 
@@ -56,7 +63,8 @@
                 if (this.readyState == 4 && this.status == 200) {
                     const response = JSON.parse(this.responseText);
                     console.log(response);
-                    const items = Object.values(response.data);
+
+                    const items = Object.values(response.data || {}); // in case data is empty
 
                     console.log(items);
 
@@ -83,7 +91,8 @@
 
         function deleteTask(id) {
             var xhttp = new XMLHttpRequest();
-            const url = `https://todo-list.dcism.org/deleteItem_action.php?item_id=${encodeURIComponent(id)}`;
+            // const url = `https://todo-list.dcism.org/deleteItem_action.php?item_id=${encodeURIComponent(id)}`;
+            const url = `https://todo-list.dcism.org/getItems_action.php?status=${encodeURIComponent(status)}&user_id=${encodeURIComponent(userId)}&t=${Date.now()}`; // add timestamp to prevent caching
             xhttp.open("GET", url, true);
             xhttp.send();
 
@@ -97,6 +106,72 @@
                 }
             }
         }
+
+        document.getElementById("addTaskForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const item_name = document.getElementById("item_name").value.trim();
+            const item_description = document.getElementById("item_description").value.trim();
+            const status = "active";
+
+            if (!item_name || !item_description || !userId) {
+                alert("⚠️ Please fill all fields and ensure user_id is set.");
+                return;
+            }
+
+            // Build URL-encoded form data
+            const params = `item_name=${encodeURIComponent(item_name)}&item_description=${encodeURIComponent(item_description)}&user_id=${encodeURIComponent(userId)}&status=${encodeURIComponent(status)}`;
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "https://todo-list.dcism.org/addItem_action.php", true);
+            xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4) {
+                    let response;
+                    try {
+                        // Strip PHP warnings if they exist
+                        const jsonStart = this.responseText.indexOf("{");
+                        response = JSON.parse(this.responseText.substring(jsonStart));
+                    } catch (err) {
+                        console.error("Invalid JSON from server:", this.responseText);
+                        alert("❌ Could not parse server response.");
+                        return;
+                    }
+
+                    if (response.status === 200) {
+                        alert("✅ Task added successfully!");
+                        document.getElementById("addTaskForm").reset();
+
+                        // Render the new task immediately
+                        const newTask = response.data;
+                        const todoDiv = document.querySelector(".active-todo");
+                        let ul = todoDiv.querySelector("ul");
+                        if (!ul) {
+                            ul = document.createElement("ul");
+                            todoDiv.appendChild(ul);
+                        }
+
+                        const taskDiv = document.createElement("div");
+                        taskDiv.className = `${newTask.item_id}`;
+                        taskDiv.innerHTML = `
+                            <h2>${newTask.item_name}</h2>
+                            <p>${newTask.item_description}</p>
+                            <button class="delete-task">Delete Task</button>
+                        `;
+                        ul.appendChild(taskDiv);
+
+                    } else {
+                        alert("⚠️ Failed to add task: " + response.message);
+                    }
+                }
+            };
+
+            xhttp.send(params);
+        });
+
+
+
     </script>
 
 </body>
