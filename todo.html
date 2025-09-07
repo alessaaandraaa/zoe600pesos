@@ -23,13 +23,29 @@
         <button id = "activeTasks">Active Tasks</button>
         <button id = "inactiveTasks">Inactive Tasks</button>
     <span>
+        
     <div class = "active-todo"></div>
     <div class = "inactive-todo"></div>
+
+    <div id="editTaskModal">
+        <h2>Edit Task</h2>
+        <form id="editTaskForm" action="https://todo-list.dcism.org/editItem_action.php" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border:1px solid #ccc;">
+            <input type="text" id="edit_item_name" name="item_name" required>
+            <input type="text" id="edit_item_description" name="item_description" required>
+            <input type="hidden" id="edit_item_id" name="item_id">
+            <input type="hidden" id="edit_user_id" name="user_id">
+            <button type="submit">Update Task</button>
+            <button type="button" id="cancelEdit">Cancel</button>
+        </form>
+    </div>
+
     <script>
     
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const userId = urlParams.get('user_id');
+
+        $("#editTaskModal").hide();
 
         $("#activeTasks").click(function(){
             $(".active-todo").show();
@@ -83,6 +99,104 @@
                 };
                 xhttp.send(jsonData);
         });
+
+        $(document).on("click", ".edit-task", function() {
+            const id = $(this).data("id");
+            const name = $(this).data("name");
+            const desc = $(this).data("desc");
+
+            $("#edit_item_id").val(id);
+            $("#edit_item_name").val(name);
+            $("#edit_item_description").val(desc);
+            $("#editTaskModal").show();
+            $("#editTaskForm").show();
+        });
+
+        $("#cancelEdit").click(function() {
+            $("#editTaskModal").hide();
+            $("#editTaskForm").hide();
+        });
+
+        $("#editTaskForm").on("submit", function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch(this.action, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(async response => {
+                const text = await response.text(); 
+                try {
+                    return JSON.parse(text); // IT SOMEWHAT STOPS HERE CUZ INVALID JSON JAHFOIAHOIFHOIAF
+                } catch {
+                    console.error("Server did not return JSON:", text);
+                    throw new Error("Invalid JSON response");
+                }
+            })
+            .then(data => {
+                console.log("Success:", data);
+                if (data.status === 200) {
+                    alert("✅ Task updated!");
+                    $("#editTaskModal").hide();
+                    renderTasks("active");
+                } else {
+                    alert("⚠️ Failed to update: " + (data.message || "Unknown error"));
+                }
+            })
+            .catch(error => console.error("Error HI:", error)); // THIS WHAT SHOWS SA ERROR
+        });
+
+        // This is the update TASK CHU2
+        $(document).on("click", ".toggle-status", function () {
+            const taskId = $(this).data("id");
+            const currentStatus = $(this).data("status");
+            const newStatus = currentStatus === "active" ? "inactive" : "active";
+
+            updateTaskStatus(taskId, newStatus);
+        });
+
+        function updateTaskStatus(itemId, newStatus) {
+            let data = {
+                status: newStatus,
+                item_id: itemId
+            };
+
+            let jsonData = JSON.stringify(data);
+
+            var xhttp = new XMLHttpRequest();
+            const url = "https://todo-list.dcism.org/statusItem_action.php";
+
+            xhttp.open("PUT", url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            xhttp.send(jsonData);
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) { // FOR SOME REASON KAY WRONG NI SIYA NA STATEMENT!!???
+                    try {
+                        const response = JSON.parse(this.responseText);
+                        console.log("Status updated:", response);
+                        alert("✅ Task status changed to " + newStatus);
+
+                        renderTasks("active");
+                        renderTasks("inactive");
+                    } catch (err) {
+                        console.error("⚠️ Could not parse JSON:", this.responseText);
+                        alert("Server did not return valid JSON.");
+                        }
+                } else {
+                    console.error("Failed to update status", this.status, this.responseText);
+                    alert("Failed to update task status");
+                }
+            }
+        }
+
+
         
         $(document).on("click", ".delete-task", function () {
             let taskDiv = $(this).parent();  
@@ -118,6 +232,8 @@
                         task.innerHTML = `
                             <h2>${item.item_name}</h2>
                             <p>${item.item_description}</p>
+                            <button class="edit-task" data-id="${item.item_id}" data-name="${item.item_name}" data-desc="${item.item_description}">Edit</button>
+                            <button class="toggle-status" data-id="${item.item_id}" data-status="${item.status}">${item.status === "active" ? "Mark Inactive" : "Mark Active"}</button>
                             <button class = "delete-task">Delete Task</button>
                         `;
                         ul.appendChild(task);
