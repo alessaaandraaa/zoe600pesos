@@ -204,12 +204,22 @@
       </form>
     </div>
 
+    <button id="logout">Log Out</button>
+
     <script>
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       const userId = urlParams.get("user_id");
 
       // -------- VISIBILITY SCRIPT ------------
+
+      if (userId === null) {
+        location.href = "login.html";
+      }
+
+      $("#logout").on("click", function () {
+        location.href = "login.html";
+      });
 
       $("#editTaskModal").hide();
 
