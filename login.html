@@ -212,6 +212,9 @@
                             try {
                                 const response = JSON.parse(this.responseText);
                                 const userId = response.data.id;
+                                if (userId === null) {
+                                    location.href = login.html;
+                                }
                                 console.log("Login success, userId:", userId);
                                 location.href = `todo.html?user_id=${userId}`;
                             } catch (e) {

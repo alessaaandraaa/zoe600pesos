@@ -1,44 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=TASA+Explorer:wght@400..800&display=swap" rel="stylesheet">
 
-    <title>TODO</title>
+  <title>TODO</title>
+
+  <style>
+    body {
+      font-family: "TASA Explorer", sans-serif;
+      position: relative;
+      background: url("wbg1.jpeg") no-repeat center center / cover;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.5);
+      z-index: -1;
+    }
+
+    .active-todo, .inactive-todo {
+      display: none;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .welcome-text {
+      margin-bottom: 0.5rem;
+      font-size: 1.8rem; 
+    }
+
+    .question-text {
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+
+    #editTaskModal {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1050;
+      width: 90%;
+      max-width: 450px;
+    }
+
+    .btn-custom {
+        background-color: #749BC2;
+        border-color: #749BC2;
+        color: white;
+    }
+
+    .btn-custom:hover {
+        background-color: #5c87af; 
+        border-color: #5c87af;
+        color: white;
+    }
+
+    .btn-edit {
+        background-color: #91afd0;
+        border-color: #91afd0;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background-color: #749BC2;
+        border-color: #749BC2;
+        color: white;
+    }
+
+  </style>
 </head>
 <body>
-    <!--
-        NOTE: No add task functionality, so using user_id=1 for testing purposes
-    -->
-    <p>Iloy si cliff</p>
-    <h2>Add Task</h2>
-    <form id="addTaskForm" method = "post">
-        <input type="text" id="item_name" name = "item_name" placeholder="Task Name" required>
-        <input type="text" id="item_description" name = "item_description" placeholder="Task Description" required>
-        <button type="submit">Add Task</button>
-    </form>
 
-    <span>
-        <button id = "activeTasks">Active Tasks</button>
-        <button id = "inactiveTasks">Inactive Tasks</button>
-    <span>
-        
-    <div class = "active-todo"></div>
-    <div class = "inactive-todo"></div>
-    
-   
-    <div id="editTaskModal">
-    <h2>Edit Task</h2>
-    <form id="editTaskForm" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border:1px solid #ccc;">
-        <input type="text" id="edit_item_name" name="item_name" required>
-        <input type="text" id="edit_item_description" name="item_description" required>
-        <input type="hidden" id="edit_item_id" name="item_id">
-        <button type="submit" id = "task_updat">Update Task</button>
-        <button type="button" id="cancelEdit">Cancel</button>
-    </form>
+    <div class="container py-5 d-flex justify-content-center">
+        <div class="card shadow-lg p-4 rounded-4 w-100" 
+            style="max-width: 950px; border: 2px solid #749BC2;">
+            <div class="card-body text-center p-3">
+                <h3 class="welcome-text mb-1 text-dark">Welcome, User!</h3>
+                <h3 class="question-text text-dark">What are we going to do today?</h3>
+                <hr>
+
+                <div class="card p-3 mb-3 shadow-sm rounded-3 w-100">
+                    <form id="addTaskForm" method="post" class="row g-2 align-items-center">
+                        <div class="col-md-4">
+                        <input type="text" id="item_name" name="item_name" 
+                                class="form-control form-control-sm" placeholder="Task Name" required>
+                        </div>
+
+                        <div class="col-md-6">
+                        <input type="text" id="item_description" name="item_description" 
+                                class="form-control form-control-sm" placeholder="Task Description" required>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-custom btn-sm w-100">Add</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="row mb-5 g-2">
+                    <div class="col">
+                        <button id="activeTasks" class="btn btn-custom rounded-pill w-100">Active</button>
+                    </div>
+                    <div class="col">
+                        <button id="inactiveTasks" class="btn btn-secondary rounded-pill w-100">Inactive</button>
+                    </div>
+                </div>
+
+                <div class="active-todo"></div>
+                <div class="inactive-todo"></div>
+            </div>
+        </div>
     </div>
 
+    <div id="editTaskModal">
+        <form id="editTaskForm" class="card p-4 shadow rounded-3 bg-white">
+            <h4>Edit Task</h4>
+            <div class="mb-2">
+                <input type="text" id="edit_item_name" name="item_name" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <input type="text" id="edit_item_description" name="item_description" class="form-control" required>
+            </div>
+            <input type="hidden" id="edit_item_id" name="item_id">
+            <div class="d-flex justify-content-end gap-2">
+                <button type="submit" id="task_updat" class="btn btn-primary">Update</button>
+                <button type="button" id="cancelEdit" class="btn btn-outline-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
 
     <script>
         const queryString = window.location.search;
@@ -243,37 +350,48 @@
 
         function renderTasks(status) {
             var xhttp = new XMLHttpRequest();
-            const url = `https://todo-list.dcism.org/getItems_action.php?status=${encodeURIComponent(status)}&user_id=${encodeURIComponent(userId)}`; // Change
+            const url = `https://todo-list.dcism.org/getItems_action.php?status=${encodeURIComponent(status)}&user_id=${encodeURIComponent(userId)}`;
             xhttp.open("GET", url, true);
             xhttp.send();
 
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     const response = JSON.parse(this.responseText);
-                    console.log(response);
-                    const items = Object.values(response.data || {}); // in case data is empty
-
-                    console.log(items);
+                    const items = Object.values(response.data || {});
 
                     let todoDiv = document.querySelector(`.${status}-todo`);
-                    let ul = document.createElement('ul');
-
-                    todoDiv.innerHTML = '';
+                    todoDiv.innerHTML = ''; // clear before re-render
 
                     items.forEach(item => {
                         let task = document.createElement('div');
-                        task.className = `${item.item_id}`
+                        task.className = `card mb-3 shadow-sm ${item.item_id}`;
                         task.innerHTML = `
-                            <h2>${item.item_name}</h2>
-                            <p>${item.item_description}</p>
-                            <button class="edit-task" data-id="${item.item_id}" data-name="${item.item_name}" data-desc="${item.item_description}">Edit</button>
-                            <button class="toggle-status" data-id="${item.item_id}" data-status="${item.status}">${item.status === "active" ? "Mark Inactive" : "Mark Active"}</button>
-                            <button class = "delete-task">Delete Task</button>
-                        `;
-                        ul.appendChild(task);
-                    });
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <!-- LEFT SIDE: Task details -->
+                                <div class="text-start">
+                                    <h6 class="mb-1 fw-bold">${item.item_name}</h6>
+                                    <small class="text-muted">${item.item_description}</small>
+                                </div>
 
-                    todoDiv.appendChild(ul);
+                                <!-- RIGHT SIDE: Buttons -->
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-edit edit-task"
+                                        data-id="${item.item_id}"
+                                        data-name="${item.item_name}"
+                                        data-desc="${item.item_description}">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-sm ${item.status === "active" ? "btn-secondary" : "btn-success"} toggle-status"
+                                        data-id="${item.item_id}"
+                                        data-status="${item.status}">
+                                        ${item.status === "active" ? "Inactive" : "Active"}
+                                    </button>
+                                    <button class="btn btn-sm btn-danger delete-task">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                        todoDiv.appendChild(task);
+                    });
                 }
             }
         }
