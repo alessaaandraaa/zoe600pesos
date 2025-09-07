@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <title>TODO</title>
+</head>
+<body>
+    <!--
+        NOTE: No add task functionality, so using user_id=1 for testing purposes
+    -->
+    <p>Iloy si cliff</p>
+    <h2>Add Task</h2>
+    <form id="addTaskForm" method = "post">
+        <input type="text" id="item_name" name = "item_name" placeholder="Task Name" required>
+        <input type="text" id="item_description" name = "item_description" placeholder="Task Description" required>
+        <button type="submit">Add Task</button>
+    </form>
+
+    <span>
+        <button id = "activeTasks">Active Tasks</button>
+        <button id = "inactiveTasks">Inactive Tasks</button>
+    <span>
+        
+    <div class = "active-todo"></div>
+    <div class = "inactive-todo"></div>
+
+    <div id="editTaskModal">
+        <h2>Edit Task</h2>
+        <form id="editTaskForm" action="https://todo-list.dcism.org/editItem_action.php" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border:1px solid #ccc;">
+            <input type="text" id="edit_item_name" name="item_name" required>
+            <input type="text" id="edit_item_description" name="item_description" required>
+            <input type="hidden" id="edit_item_id" name="item_id">
+            <button type="submit">Update Task</button>
+            <button type="button" id="cancelEdit">Cancel</button>
+        </form>
+    </div>
+
+    <script>
+    
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const userId = urlParams.get('user_id');
+
+        $("#editTaskModal").hide();
+
+        $("#activeTasks").click(function(){
+            $(".active-todo").show();
+            $(".inactive-todo").hide();
+
+            renderTasks("active");
+        });
+        
+        $("#inactiveTasks").click(function(){
+            $(".inactive-todo").show();
+            $(".active-todo").hide();
+
+            renderTasks("inactive");
+        });
+
+        $("#addTaskForm").on("submit", function(event) {
+                event.preventDefault();
+
+                let formData = {};
+                new FormData(this).forEach((value, key) => {
+                    formData[key] = value;
+                });
+
+                formData.user_id = userId;
+
+                let jsonData = JSON.stringify(formData);
+                console.log("New Task:", jsonData);
+
+                var xhttp = new XMLHttpRequest();
+                const url = `https://todo-list.dcism.org/addItem_action.php`;
+                xhttp.open("POST", `${url}`, true);
+                console.log("Submitting data...");
+
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState === 4) {
+                        console.log("Raw signup response:", this.responseText);
+                        if (this.status === 200) {
+                            try {
+                                const response = JSON.parse(this.responseText);
+                                console.log("Parsed signup response:", response);
+                                alert("Added task");
+
+                                renderTasks("active");
+                            } catch (e) {
+                                console.error("Add Task: Could not parse JSON", e);
+                            }
+                        } else {
+                            console.error("Failed to add task", this.status, this.responseText);
+                        }
+                    }
+                };
+                xhttp.send(jsonData);
+        });
+
+        $(document).on("click", ".edit-task", function() {
+            const id = $(this).data("id");
+            const name = $(this).data("name");
+            const desc = $(this).data("desc");
+
+            $("#edit_item_id").val(id);
+            $("#edit_item_name").val(name);
+            $("#edit_item_description").val(desc);
+            $("#editTaskModal").show();
+            $("#editTaskForm").show();
+        });
+
+        $("#cancelEdit").click(function() {
+            $("#editTaskModal").hide();
+            $("#editTaskForm").hide();
+        });
+
+        /*
+        $("#editTaskForm").submit(function(e) {
+            e.preventDefault();
+
+            let formData = {};
+            new FormData(this).forEach((value, key) => {
+                formData[key] = value;
+            })
+
+            formData.user_id = userId;
+
+            let jsonData = JSON.stringify(formData);
+
+            var xhttp = new XMLHttpRequest();
+            const url = "https://todo-list.dcism.org/editItem_action.php";
+            xhttp.open("PUT", `${url}` , true);
+            xhttp.setRequestHeader("Content-Type", "application/json"); 
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4) {
+                    let response;
+                    try {
+                        response = JSON.parse(this.responseText);
+                    } catch (err) {
+                        console.error("Not JSON, raw response:", this.responseText);
+                        alert("⚠️ Server did not return JSON. Check console for details.");
+                        return;
+                    }
+
+                    if (response.status === 200) {
+                        alert("✅ Task updated!");
+                        $("#editTaskModal").hide();
+                        renderTasks("active");
+                    } else {
+                        alert("⚠️ Failed to update: " + (response.message || "Unknown error"));
+                    }
+                }
+            };
+            xhttp.send(jsonData);
+        }); */
+
+        /*
+        $("#editTaskForm").on("submit", function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch(this.action, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Success:", data);
+                if (data.status === 200) {
+                    alert("✅ Task updated!");
+                    $("#editTaskModal").hide();
+                    renderTasks("active");
+                } else {
+                    alert("⚠️ Failed to update: " + (data.message || "Unknown error"));
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }); */
+
+        $("#editTaskForm").on("submit", function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch(this.action, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(async response => {
+                const text = await response.text(); // get raw response
+                try {
+                    return JSON.parse(text);
+                } catch {
+                    console.error("Server did not return JSON:", text);
+                    throw new Error("Invalid JSON response");
+                }
+            })
+            .then(data => {
+                console.log("Success:", data);
+                if (data.status === 200) {
+                    alert("✅ Task updated!");
+                    $("#editTaskModal").hide();
+                    renderTasks("active");
+                } else {
+                    alert("⚠️ Failed to update: " + (data.message || "Unknown error"));
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+
+
+        
+        $(document).on("click", ".delete-task", function () {
+            let taskDiv = $(this).parent();  
+            let taskId = taskDiv.attr('class');            
+            console.log("Deleting task:", taskId);
+
+            deleteTask(taskId);
+        }); 
+
+        function renderTasks(status) {
+            var xhttp = new XMLHttpRequest();
+            const url = `https://todo-list.dcism.org/getItems_action.php?status=${encodeURIComponent(status)}&user_id=${encodeURIComponent(userId)}`; // Change
+            xhttp.open("GET", url, true);
+            xhttp.send();
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const response = JSON.parse(this.responseText);
+                    console.log(response);
+
+                    const items = Object.values(response.data || {}); // in case data is empty
+
+                    console.log(items);
+
+                    let todoDiv = document.querySelector(`.${status}-todo`);
+                    let ul = document.createElement('ul');
+
+                    todoDiv.innerHTML = '';
+
+                    items.forEach(item => {
+                        let task = document.createElement('div');
+                        task.className = `${item.item_id}`
+                        task.innerHTML = `
+                            <h2>${item.item_name}</h2>
+                            <p>${item.item_description}</p>
+                            <button class="edit-task" data-id="${item.item_id}" data-name="${item.item_name}" data-desc="${item.item_description}">Edit</button>
+                            <button class = "delete-task">Delete Task</button>
+                        `;
+                        ul.appendChild(task);
+                    });
+
+                    todoDiv.appendChild(ul);
+                }
+            }
+        }
+
+        function deleteTask(id) {
+            var xhttp = new XMLHttpRequest();
+            const url = `https://todo-list.dcism.org/deleteItem_action.php?item_id=${encodeURIComponent(id)}`;
+            //const url = `https://todo-list.dcism.org/getItems_action.php?status=${encodeURIComponent(status)}&user_id=${encodeURIComponent(userId)}&t=${Date.now()}`; // add timestamp to prevent caching
+            xhttp.open("GET", url, true);
+            xhttp.send();
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const response = JSON.parse(this.responseText);
+                    console.log(response);
+
+                    renderTasks("active");
+                    renderTasks("inactive");
+                }
+            }
+        }
+
+    </script>
+
+</body>
+</html>
