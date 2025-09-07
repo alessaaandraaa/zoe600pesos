@@ -26,24 +26,26 @@
         
     <div class = "active-todo"></div>
     <div class = "inactive-todo"></div>
-
+    
+   
     <div id="editTaskModal">
-        <h2>Edit Task</h2>
-        <form id="editTaskForm" action="https://todo-list.dcism.org/editItem_action.php" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border:1px solid #ccc;">
-            <input type="text" id="edit_item_name" name="item_name" required>
-            <input type="text" id="edit_item_description" name="item_description" required>
-            <input type="hidden" id="edit_item_id" name="item_id">
-            <input type="hidden" id="edit_user_id" name="user_id">
-            <button type="submit">Update Task</button>
-            <button type="button" id="cancelEdit">Cancel</button>
-        </form>
+    <h2>Edit Task</h2>
+    <form id="editTaskForm" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border:1px solid #ccc;">
+        <input type="text" id="edit_item_name" name="item_name" required>
+        <input type="text" id="edit_item_description" name="item_description" required>
+        <input type="hidden" id="edit_item_id" name="item_id">
+        <button type="submit" id = "task_updat">Update Task</button>
+        <button type="button" id="cancelEdit">Cancel</button>
+    </form>
     </div>
 
+
     <script>
-    
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const userId = urlParams.get('user_id');
+
+        // -------- VISIBILITY SCRIPT ------------
 
         $("#editTaskModal").hide();
 
@@ -61,45 +63,6 @@
             renderTasks("inactive");
         });
 
-        $("#addTaskForm").on("submit", function(event) {
-                event.preventDefault();
-
-                let formData = {};
-                new FormData(this).forEach((value, key) => {
-                    formData[key] = value;
-                });
-
-                formData.user_id = userId;
-
-                let jsonData = JSON.stringify(formData);
-                console.log("New Task:", jsonData);
-
-                var xhttp = new XMLHttpRequest();
-                const url = `https://todo-list.dcism.org/addItem_action.php`;
-                xhttp.open("POST", `${url}`, true);
-                console.log("Submitting data...");
-
-                xhttp.onreadystatechange = function() {
-                    if (this.readyState === 4) {
-                        console.log("Raw signup response:", this.responseText);
-                        if (this.status === 200) {
-                            try {
-                                const response = JSON.parse(this.responseText);
-                                console.log("Parsed signup response:", response);
-                                alert("Added task");
-
-                                renderTasks("active");
-                            } catch (e) {
-                                console.error("Add Task: Could not parse JSON", e);
-                            }
-                        } else {
-                            console.error("Failed to add task", this.status, this.responseText);
-                        }
-                    }
-                };
-                xhttp.send(jsonData);
-        });
-
         $(document).on("click", ".edit-task", function() {
             const id = $(this).data("id");
             const name = $(this).data("name");
@@ -113,46 +76,94 @@
         });
 
         $("#cancelEdit").click(function() {
-            $("#editTaskModal").hide();
+            $("#editTask").hide();
             $("#editTaskForm").hide();
         });
 
+        // ------------- ADD TASK -------------
+
+        $("#addTaskForm").on("submit", function(event) {
+        event.preventDefault();
+
+            // create javascript object storing the form data
+            let formData = {};
+            new FormData(this).forEach((value, key) => {
+                formData[key] = value;
+            });
+
+            formData.user_id = userId;
+
+            let jsonData = JSON.stringify(formData);
+            console.log("New Task:", jsonData);
+
+            var xhttp = new XMLHttpRequest();
+            const url = `https://todo-list.dcism.org/addItem_action.php`;
+            xhttp.open("POST", `${url}`, true);
+            console.log("Submitting data...");
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4) {
+                    console.log("Raw signup response:", this.responseText);
+                    if (this.status === 200) {
+                        try {
+                            const response = JSON.parse(this.responseText);
+                            console.log("Parsed signup response:", response);
+                            alert("Added task");
+
+                            renderTasks("active");
+                        } catch (e) {
+                            console.error("Add Task: Could not parse JSON", e);
+                        }
+                    } else {
+                        console.error("Failed to add task", this.status, this.responseText);
+                    }
+                }
+            };
+            xhttp.send(jsonData);
+        });
+
+        // -- EDIT TASK --
         $("#editTaskForm").on("submit", function(event) {
             event.preventDefault();
 
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
+            // create javascript object storing the form data
+            let formData = {};
+                new FormData(this).forEach((value, key) => {
+                    formData[key] = value;
+            });
 
-            fetch(this.action, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(async response => {
-                const text = await response.text(); 
-                try {
-                    return JSON.parse(text); // IT SOMEWHAT STOPS HERE CUZ INVALID JSON JAHFOIAHOIFHOIAF
-                } catch {
-                    console.error("Server did not return JSON:", text);
-                    throw new Error("Invalid JSON response");
+            console.log(formData);
+
+            let jsonData = JSON.stringify(formData);
+            console.log("Edited Task:", jsonData);
+
+            const xhttp = new XMLHttpRequest();
+            const url = "https://todo-list.dcism.org/editItem_action.php";
+
+            xhttp.open('PUT', url, true);
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4) {
+                    console.log("Raw signup response:", this.responseText);
+                    if (this.status === 200) {
+                        try {
+                            const response = JSON.parse(this.responseText);
+                            console.log("Parsed signup response:", response);
+                            alert("Edited task");
+
+                            renderTasks("active");
+                        } catch (e) {
+                            console.error("Edit Task: Could not edit", e);
+                        }
+                        } else {
+                            console.error("Failed to edit task", this.status, this.responseText);
+                        }
                 }
-            })
-            .then(data => {
-                console.log("Success:", data);
-                if (data.status === 200) {
-                    alert("✅ Task updated!");
-                    $("#editTaskModal").hide();
-                    renderTasks("active");
-                } else {
-                    alert("⚠️ Failed to update: " + (data.message || "Unknown error"));
-                }
-            })
-            .catch(error => console.error("Error HI:", error)); // THIS WHAT SHOWS SA ERROR
+            }
+
+            xhttp.send(jsonData);
         });
 
-        // This is the update TASK CHU2
+        // -- TOGGLE TASK STATUS -----
         $(document).on("click", ".toggle-status", function () {
             const taskId = $(this).data("id");
             const currentStatus = $(this).data("status");
@@ -168,35 +179,40 @@
             };
 
             let jsonData = JSON.stringify(data);
+            console.log(jsonData);
 
             var xhttp = new XMLHttpRequest();
             const url = "https://todo-list.dcism.org/statusItem_action.php";
 
             xhttp.open("PUT", url, true);
-            xhttp.setRequestHeader("Content-Type", "application/json");
-            xhttp.send(jsonData);
 
             xhttp.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) { // FOR SOME REASON KAY WRONG NI SIYA NA STATEMENT!!???
-                    try {
-                        const response = JSON.parse(this.responseText);
-                        console.log("Status updated:", response);
-                        alert("✅ Task status changed to " + newStatus);
+                console.log(this.readyState);
+                if (this.readyState === 4) { 
+                    console.log("Raw signup response:", this.responseText);
+                    console.log(this.status);
+                    if (this.status === 200) { 
+                        try {
+                            const response = JSON.parse(this.responseText);
+                            console.log("Status updated:", response);
+                            alert("✅ Task status changed to " + newStatus);
 
-                        renderTasks("active");
-                        renderTasks("inactive");
-                    } catch (err) {
-                        console.error("⚠️ Could not parse JSON:", this.responseText);
-                        alert("Server did not return valid JSON.");
+                            renderTasks("active");
+                            renderTasks("inactive");
+                        } catch (err) {
+                            console.error("⚠️ Could not parse JSON:", this.responseText);
+                            alert("Server did not return valid JSON.");
                         }
-                } else {
-                    console.error("Failed to update status", this.status, this.responseText);
-                    alert("Failed to update task status");
+                    } else {
+                        console.error("Failed to update status", this.status, this.responseText);
+                        alert("Failed to update task status");
+                    }   
                 }
             }
+            xhttp.send(jsonData);
         }
 
-
+        // --- DELETE TASK -----------------
         
         $(document).on("click", ".delete-task", function () {
             let taskDiv = $(this).parent();  
@@ -205,6 +221,25 @@
 
             deleteTask(taskId);
         }); 
+
+        function deleteTask(id) {
+            var xhttp = new XMLHttpRequest();
+            const url = `https://todo-list.dcism.org/deleteItem_action.php?item_id=${encodeURIComponent(id)}`;
+            xhttp.open("GET", url, true);
+            xhttp.send();
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const response = JSON.parse(this.responseText);
+                    console.log(response);
+
+                    renderTasks("active");
+                    renderTasks("inactive");
+                }
+            }
+        }
+
+        // -- RENDER TASK --------------------
 
         function renderTasks(status) {
             var xhttp = new XMLHttpRequest();
@@ -216,7 +251,6 @@
                 if (this.readyState == 4 && this.status == 200) {
                     const response = JSON.parse(this.responseText);
                     console.log(response);
-
                     const items = Object.values(response.data || {}); // in case data is empty
 
                     console.log(items);
@@ -240,24 +274,6 @@
                     });
 
                     todoDiv.appendChild(ul);
-                }
-            }
-        }
-
-        function deleteTask(id) {
-            var xhttp = new XMLHttpRequest();
-            const url = `https://todo-list.dcism.org/deleteItem_action.php?item_id=${encodeURIComponent(id)}`;
-            //const url = `https://todo-list.dcism.org/getItems_action.php?status=${encodeURIComponent(status)}&user_id=${encodeURIComponent(userId)}&t=${Date.now()}`; // add timestamp to prevent caching
-            xhttp.open("GET", url, true);
-            xhttp.send();
-
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    const response = JSON.parse(this.responseText);
-                    console.log(response);
-
-                    renderTasks("active");
-                    renderTasks("inactive");
                 }
             }
         }

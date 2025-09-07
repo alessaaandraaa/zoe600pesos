@@ -26,17 +26,20 @@
         
     <div class = "active-todo"></div>
     <div class = "inactive-todo"></div>
-
-    <div id="editTaskModal">
-        <h2>Edit Task</h2>
-        <form id="editTaskForm" action="https://todo-list.dcism.org/editItem_action.php" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border:1px solid #ccc;">
-            <input type="text" id="edit_item_name" name="item_name" required>
-            <input type="text" id="edit_item_description" name="item_description" required>
-            <input type="hidden" id="edit_item_id" name="item_id">
-            <button type="submit">Update Task</button>
-            <button type="button" id="cancelEdit">Cancel</button>
-        </form>
+    
+    <div class = "editTask">
+        <div id="editTaskModal">
+            <h2>Edit Task</h2>
+            <form id="editTaskForm" action="https://todo-list.dcism.org/editItem_action.php" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border:1px solid #ccc;">
+                <input type="text" id="edit_item_name" name="item_name" required>
+                <input type="text" id="edit_item_description" name="item_description" required>
+                <input type="hidden" id="edit_item_id" name="item_id">
+                <button type="submit">Update Task</button>
+                <button type="button" id="cancelEdit">Cancel</button>
+            </form>
+        </div>
     </div>
+ 
 
     <script>
     
@@ -59,6 +62,8 @@
 
             renderTasks("inactive");
         });
+
+        // --- ADD TASK ---
 
         $("#addTaskForm").on("submit", function(event) {
                 event.preventDefault();
@@ -107,13 +112,11 @@
             $("#edit_item_id").val(id);
             $("#edit_item_name").val(name);
             $("#edit_item_description").val(desc);
-            $("#editTaskModal").show();
-            $("#editTaskForm").show();
+            $(".editTask").show();
         });
 
         $("#cancelEdit").click(function() {
-            $("#editTaskModal").hide();
-            $("#editTaskForm").hide();
+            $(".editTask").hide();
         });
 
         /*
@@ -219,16 +222,8 @@
             })
             .catch(error => console.error("Error:", error));
         });
-
-
         
-        $(document).on("click", ".delete-task", function () {
-            let taskDiv = $(this).parent();  
-            let taskId = taskDiv.attr('class');            
-            console.log("Deleting task:", taskId);
-
-            deleteTask(taskId);
-        }); 
+        // --- DISPLAY TASK --- 
 
         function renderTasks(status) {
             var xhttp = new XMLHttpRequest();
@@ -266,6 +261,16 @@
                 }
             }
         }
+
+        // --- DELETE TASK ----
+
+        $(document).on("click", ".delete-task", function () {
+            let taskDiv = $(this).parent();  
+            let taskId = taskDiv.attr('class');            
+            console.log("Deleting task:", taskId);
+
+            deleteTask(taskId);
+        }); 
 
         function deleteTask(id) {
             var xhttp = new XMLHttpRequest();
