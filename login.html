@@ -71,64 +71,78 @@
         }
 
         #login, #register {
-            min-height: 420px;
+            min-height: 300px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
         .card-body-wrapper {
-            min-height: 460px;
+            min-height: 320px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
+
+        #register .mb-3, #login .mb-3 {
+            margin-bottom: 0.5rem; 
+        }
+
+        #login h2, #register h2 {
+            margin-bottom: 0.5rem;  
+            font-size: 1.5rem;     
+        }
+
+        #login hr, #register hr {
+            margin: 0.5rem 0;     
+        }
+
     </style>
 </head>
 
 <body class="bg-light d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-10 col-lg-9">
+            <div class="col-md-7 col-lg-10">
             
             <!-- Rectangle (Bootstrap card) -->
             <div class="card shadow-lg overflow-hidden p-2">
                 <div class="row g-0 align-items-stretch">
 
                 <!-- LEFT: Forms -->
-                <div class="col-md-7 p-4 d-flex flex-column">
+                <div class="col-md-8 p-4 d-flex flex-column">
                 
                 <div class="card-body-wrapper">
                 <!-- SIGN UP -->
                 <div id="register" style="display: none;">
-                    <h2 class="text-center mb-3 fs-1">SIGN UP</h2>
+                    <h2 class="text-center mb-3 fs-2">Sign Up</h2>
                     <hr>
 
                     <form id="registerForm" method="post" novalidate>
                       <div class="mb-3">
-                        <label for="first_name" class="form-label">First Name</label>
+                        <label for="first_name" class="form-label fs-6">First Name</label>
                         <input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name">
                       </div>
                       <div class="mb-3">
-                        <label for="last_name" class="form-label">Last Name</label>
+                        <label for="last_name" class="form-label fs-6">Last Name</label>
                         <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name">
                       </div>
                       <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
+                        <label for="email" class="form-label fs-6">Email</label>
                         <input type="email" class="form-control" name="email" id="email" placeholder="Email">
                       </div>
                       <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
+                        <label for="password" class="form-label fs-6">Password</label>
                         <input type="password" class="form-control" name="password" id="rpassword" placeholder="Password">
                       </div>
                       <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <label for="confirm_password" class="form-label fs-6">Confirm Password</label>
                         <input type="confirm_password" class="form-control" name="confirm_password" id="rpassword" placeholder="Confirm Password">
                       </div>
                         <button type="submit" class="btn btn-custom w-100" id="submitSignup">Sign Up</button>
                     </form>
 
-                    <div class="text-center mt-3">
+                    <div class="text-center mt-4">
                         <p>Already have an account?</p>
                         <button id="loginBtn" class="btn btn-link">Login to your account</button>
                     </div>
@@ -136,22 +150,22 @@
 
                 <!-- LOGIN -->
                 <div id="login">
-                    <h2 class="text-center mb-3 fs-1">Welcome to CheckList!</h2>
+                    <h2 class="text-center mb-3 fs-2">Welcome to CheckList!</h2>
                     <hr>
 
                     <form id="loginForm" method="post" novalidate>
                         <div class="mb-3">
-                            <label for="login-email" class="form-label">Email</label>
+                            <label for="login-email" class="form-label fs-6">Email</label>
                             <input type="email" class="form-control" name="login-email" id="login-email" placeholder="Email">
                         </div>
                         <div class="mb-3">
-                            <label for="login-password" class="form-label">Password</label>
+                            <label for="login-password" class="form-label fs-6">Password</label>
                             <input type="password" class="form-control" name="login-password" id="login-password" placeholder="Password">
                         </div>
                         <button type="submit" class="btn btn-custom w-100" id="submitLogin">Log In</button>
                     </form>
 
-                    <div class="text-center mt-3">
+                    <div class="text-center mt-4">
                         <p>Don't have an account?</p>
                         <button id="registerBtn" class="btn btn-link">Register an account</button>
                     </div>
@@ -161,7 +175,7 @@
             </div>
 
             <!-- RIGHT: IMAGE -->
-            <div class="col-md-5 d-none d-md-block login-image login"></div>
+            <div class="col-md-4 d-none d-md-block login-image login"></div>
 
             </div>
             </div>
