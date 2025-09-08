@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="module" src="todo-script.js"></script>
+    <script type="module" src="utils.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=TASA+Explorer:wght@400..800&display=swap"
+      rel="stylesheet"
+    />
+    <link href="styles.css" rel="stylesheet" />
+
+    <title>To-Do List</title>
+  </head>
+  <body>
+    <div class="d-flex justify-content-end p-3">
+      <button id="logout" class="btn btn-danger">Log Out</button>
+    </div>
+
+    <div class="container py-5 d-flex justify-content-center">
+      <div
+        class="card shadow-lg p-4 rounded-4 w-100"
+        style="max-width: 950px; border: 2px solid #749bc2"
+      >
+        <div class="card-body text-center p-3">
+          <h3 class="welcome-text mb-1 text-dark">Welcome, Userrr!</h3>
+          <h3 class="question-text text-dark">
+            What are we going to do today?
+          </h3>
+          <hr class="mb-5" />
+
+          <div class="card p-3 mb-3 shadow-sm rounded-3 w-100">
+            <form
+              id="addTaskForm"
+              method="post"
+              class="row g-2 align-items-center"
+            >
+              <div class="col-md-4">
+                <input
+                  type="text"
+                  id="item_name"
+                  name="item_name"
+                  class="form-control form-control-sm"
+                  placeholder="Task Name"
+                  required
+                />
+              </div>
+
+              <div class="col-md-6">
+                <input
+                  type="text"
+                  id="item_description"
+                  name="item_description"
+                  class="form-control form-control-sm"
+                  placeholder="Task Description"
+                  required
+                />
+              </div>
+
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-custom btn-sm w-100">
+                  Add
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="row mb-5 g-2">
+            <div class="col">
+              <button
+                id="activeTasks"
+                class="btn btn-custom rounded-pill w-100"
+              >
+                Active
+              </button>
+            </div>
+            <div class="col">
+              <button
+                id="inactiveTasks"
+                class="btn btn-secondary rounded-pill w-100"
+              >
+                Inactive
+              </button>
+            </div>
+          </div>
+
+          <hr class="mb-4" />
+
+          <h5 id="taskLabel" class="mb-3 fw-bold text-dark text-start"></h5>
+          <div class="active-todo"></div>
+          <div class="inactive-todo"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="editTaskModal">
+      <form id="editTaskForm" class="card p-4 shadow rounded-3 bg-white">
+        <h4>Edit Task</h4>
+        <div class="mb-2">
+          <input
+            type="text"
+            id="edit_item_name"
+            name="item_name"
+            class="form-control"
+            required
+          />
+        </div>
+        <div class="mb-2">
+          <input
+            type="text"
+            id="edit_item_description"
+            name="item_description"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <input type="hidden" id="edit_item_id" name="item_id" />
+        <div class="d-flex justify-content-end gap-2">
+          <button type="submit" id="task_updat" class="btn btn-primary">
+            Update
+          </button>
+          <button
+            type="button"
+            id="cancelEdit"
+            class="btn btn-outline-secondary"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

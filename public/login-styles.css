@@ -1,0 +1,84 @@
+body {
+            font-family: "TASA Explorer", sans-serif;
+            position: relative;
+            background: url("wbg1.jpeg") no-repeat center center / cover;
+            min-height: 100vh;
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat; 
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.5); 
+            z-index: -1; 
+        }
+
+        .btn-custom {
+            background-color: #749BC2 !important;
+            border-color: #749BC2 !important;
+            color: white !important;
+        }
+
+        .btn-custom:hover {
+            background-color: #5d84a8 !important;
+            border-color: #5d84a8 !important;
+        }
+
+        .card {
+            border: 2px solid #749BC2 !important; 
+            border-radius: 0.5rem;
+            height: 100%;            
+        }
+
+        .card .row {
+            height: 100%;        
+        }
+
+        .login-image {
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain; 
+            min-height: 80%;          
+            height: 100%;
+        }
+
+        .login-image.login {
+            background-image: url("log-in.png");
+        }
+
+        .login-image.register {
+            background-image: url("log-in2.png");
+        }
+
+        #login, #register {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-body-wrapper {
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #register .mb-3, #login .mb-3 {
+            margin-bottom: 0.5rem; 
+        }
+
+        #login h2, #register h2 {
+            margin-bottom: 0.5rem;  
+            font-size: 1.5rem;     
+        }
+
+        #login hr, #register hr {
+            margin: 0.5rem 0;     
+        }
